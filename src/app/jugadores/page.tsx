@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import BotFloat from '@/components/bot/BotFloat'
 
 const PLAYERS = [
   { id: 1, name: 'E. Martínez', nation: '🇦🇷', pos: 'GK', value: 40 },
@@ -131,7 +132,6 @@ export default function JugadoresPage() {
                   borderRadius: '10px', overflow: 'hidden', cursor: canAdd || sel ? 'pointer' : 'not-allowed',
                   opacity: !sel && !canAdd ? 0.45 : 1, transition: 'all .2s',
                 }}>
-                {/* TOP */}
                 <div style={{ height: '60px', background: sel ? 'rgba(116,172,223,.2)' : '#1c2333', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', fontSize: '28px' }}>
                   {p.nation}
                   <span style={{ position: 'absolute', top: '5px', right: '5px', fontSize: '9px', fontWeight: 700, padding: '2px 5px', borderRadius: '4px', background: POS_COLOR[p.pos] + '33', color: POS_COLOR[p.pos] }}>
@@ -141,7 +141,6 @@ export default function JugadoresPage() {
                     <span style={{ position: 'absolute', top: '5px', left: '5px', fontSize: '11px', background: '#74ACDF', borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000e2e', fontWeight: 700 }}>✓</span>
                   )}
                 </div>
-                {/* BODY */}
                 <div style={{ padding: '7px 8px' }}>
                   <div style={{ fontSize: '11px', fontWeight: 600, marginBottom: '2px', whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
                   <div style={{ fontSize: '10px', color: '#6a88aa' }}>{p.nation}</div>
@@ -169,6 +168,8 @@ export default function JugadoresPage() {
           </button>
         ))}
       </div>
+
+      <BotFloat />
     </main>
   )
 }
