@@ -118,7 +118,7 @@ export default function BotFloat() {
         {/* BUBBLE */}
         {bubbleOpen && (
           <div style={{ background: '#161b22', border: '1px solid rgba(116,172,223,0.3)', borderRadius: '12px', padding: '10px 14px', maxWidth: '200px', fontSize: '12px', color: '#ddeeff', lineHeight: 1.5, boxShadow: '0 4px 20px rgba(0,0,0,.4)' }}>
-            <div style={{ fontWeight: 700, marginBottom: '6px', color: '#74ACDF' }}>Diego MaraBOTona 🇦🇷</div>
+            <div style={{ fontWeight: 700, marginBottom: '6px', color: '#74ACDF' }}>DieBOT 🇦🇷</div>
             <div style={{ marginBottom: '8px' }}>¡Hola! Estoy acá para ayudarte 🤙</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <button onClick={() => openModal('hola', 'Hola')}
@@ -145,7 +145,7 @@ export default function BotFloat() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.7)', zIndex: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div style={{ background: '#161b22', border: '1px solid rgba(116,172,223,0.2)', borderRadius: '16px', padding: '1.5rem', maxWidth: '340px', width: '100%', textAlign: 'center' }}>
             <img src={IMGS.Hola} alt="Hola" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginBottom: '1rem' }} />
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '20px', letterSpacing: '.04em', marginBottom: '8px' }}>¡Hola! Soy Diego MaraBOTona</div>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '20px', letterSpacing: '.04em', marginBottom: '8px' }}>¡Hola! Soy DieBOT</div>
             <div style={{ fontSize: '13px', color: '#9ca3af', lineHeight: 1.6, marginBottom: '1rem' }}>
               ¡Hola! Te voy a acompañar en el juego 🇦🇷<br /><br />
               <strong style={{ color: '#ddeeff' }}>FUTBOL DT</strong> es el fantasy del <strong style={{ color: '#ddeeff' }}>Mundial 2026</strong>.<br />
