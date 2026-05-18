@@ -93,7 +93,7 @@ export default function ClubPage() {
       primary_color: colorP,
       secondary_color: colorS,
       jersey_style: jerseyH,
-    })
+    }, { onConflict: 'user_id' })
 
     setSaving(false)
     if (error) { showToast('Error al guardar. Intentá de nuevo.'); return }
