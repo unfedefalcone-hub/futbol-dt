@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+const BotWrapper = dynamic(() => import('@/components/bot/BotWrapper'), { ssr: false })
 
 const FORMATIONS: Record<string, { pos: string; x: number; y: number }[]> = {
   '4-3-3': [
@@ -58,6 +60,7 @@ export default function EquipoPage() {
 
   return (
     <main style={{ minHeight: '100vh', background: '#07090f', color: '#ddeeff', fontFamily: "'DM Sans', sans-serif", paddingBottom: '5rem' }}>
+      <BotWrapper />
       {/* TOPBAR */}
       <div style={{ height: '54px', background: 'rgba(7,9,15,.97)', borderBottom: '1px solid rgba(116,172,223,0.13)', display: 'flex', alignItems: 'center', padding: '0 1rem', gap: '1rem', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '20px', color: '#f8faff' }}>

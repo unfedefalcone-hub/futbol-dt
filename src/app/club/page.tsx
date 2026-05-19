@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import dynamic from 'next/dynamic'
+const BotWrapper = dynamic(() => import('@/components/bot/BotWrapper'), { ssr: false })
 
 const COLORS = [
   { name: 'Celeste', hex: '#74ACDF' }, { name: 'Azul', hex: '#003087' },
@@ -116,6 +118,8 @@ export default function ClubPage() {
 
   return (
     <main style={s.page}>
+      <BotWrapper />
+      
       {/* TOPBAR */}
       <div style={{ height: '54px', background: 'rgba(7,9,15,.97)', borderBottom: '1px solid rgba(116,172,223,0.13)', display: 'flex', alignItems: 'center', padding: '0 1rem', gap: '1rem' }}>
         <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '20px', letterSpacing: '.05em', color: '#f8faff' }}>
