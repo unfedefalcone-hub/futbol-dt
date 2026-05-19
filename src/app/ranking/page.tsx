@@ -32,7 +32,6 @@ export default function RankingPage() {
 
   return (
     <div className="min-h-screen bg-[#07090f] pb-24">
-      <BotWrapper />
       {/* Header */}
       <div className="p-4 border-b border-[#74ACDF]/20">
         <h1 className="font-['Bebas_Neue'] text-2xl text-[#74ACDF] tracking-widest mb-3">
