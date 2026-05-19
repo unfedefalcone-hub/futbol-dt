@@ -45,6 +45,7 @@ function shieldSVG(id: string, c1: string, c2: string) {
 
 function jerseySVG(id: string, c1: string, c2: string) {
   const shape = `M15 4L8 10L2 8L2 20L10 20L10 52L40 52L40 20L48 20L48 8L42 10L35 4Q30 0 25 0Q20 0 15 4Z`
+  const bodyOnly = `M10 20L10 52L40 52L40 20Z`
   
   const patterns: Record<string, string> = {
     solid: '',
@@ -69,9 +70,11 @@ function jerseySVG(id: string, c1: string, c2: string) {
       <path d="M17 6Q25 15 33 6" stroke="${c2}" stroke-width="6" fill="none" stroke-linecap="round"/>`,
   }
 
+  const clipId = `jc-${id}-${c1.replace('#','')}`
+
   return `
     <defs>
-      <clipPath id="jersey-clip-${id}-${c1.replace('#','')}">
+      <clipPath id="${clipId}">
         <path d="${shape}"/>
       </clipPath>
     </defs>
@@ -80,12 +83,13 @@ function jerseySVG(id: string, c1: string, c2: string) {
     <path d="${shape}" fill="${c1}"/>
     
     <!-- Patron contenido dentro de la camiseta -->
-    <g clip-path="url(#jersey-clip-${id}-${c1.replace('#','')})">
+    <g clip-path="url(#${clipId})">
       ${patterns[id] || ''}
     </g>
     
-    <!-- Sombra cuello -->
-    <path d="M17 5Q25 13 33 5" stroke="rgba(0,0,0,.25)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Cuello encima de todo (sin clipPath) -->
+    <path d="M17 5Q25 14 33 5" stroke="rgba(0,0,0,.3)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M17 5Q25 13 33 5" stroke="${c1}" stroke-width="2" fill="none" stroke-linecap="round"/>
     
     <!-- Borde camiseta -->
     <path d="${shape}" fill="none" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
