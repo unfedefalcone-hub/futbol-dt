@@ -75,6 +75,8 @@ export default function PerfilPage() {
 
   return (
     <main style={{ minHeight: '100vh', background: '#07090f', color: '#ddeeff', fontFamily: "'DM Sans', sans-serif", paddingBottom: '5rem' }}>
+      <BotWrapper />
+
       {/* TOPBAR */}
       <div style={{ height: '54px', background: 'rgba(7,9,15,.97)', borderBottom: '1px solid rgba(116,172,223,0.13)', display: 'flex', alignItems: 'center', padding: '0 1rem', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '20px', color: '#f8faff' }}>
@@ -86,19 +88,23 @@ export default function PerfilPage() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.2rem' }}>
-  <div style={{ borderRadius: '50%', border: '2px solid #74ACDF', overflow: 'hidden', flexShrink: 0 }}>
-    <Avatar seed={profile?.username || "DT2026"} size={60} />
-  </div>
-  <div>
-    <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '22px', letterSpacing: '.04em' }}>Mi Perfil</div>
-    <div style={{ fontSize: '12px', color: '#6a88aa' }}>DT desde el Mundial 2026</div>
-  </div>
-  <div style={{ marginLeft: 'auto', textAlign: 'center' as const }}>
-    <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '28px', color: '#f0c040' }}>247</div>
-    <div style={{ fontSize: '10px', color: '#6a88aa' }}>PUNTOS</div>
-  </div>
-</div>
+      {/* CONTENIDO */}
+      <div style={{ maxWidth: '500px', margin: '0 auto', padding: '1rem' }}>
+
+        {/* HEADER PERFIL */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.2rem' }}>
+          <div style={{ borderRadius: '50%', border: '2px solid #74ACDF', overflow: 'hidden', flexShrink: 0 }}>
+            <Avatar seed="DT2026" size={60} />
+          </div>
+          <div>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '22px', letterSpacing: '.04em' }}>Mi Perfil</div>
+            <div style={{ fontSize: '12px', color: '#6a88aa' }}>DT desde el Mundial 2026</div>
+          </div>
+          <div style={{ marginLeft: 'auto', textAlign: 'center' as const }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '28px', color: '#f0c040' }}>247</div>
+            <div style={{ fontSize: '10px', color: '#6a88aa' }}>PUNTOS</div>
+          </div>
+        </div>
 
         {/* TABS */}
         <div style={{ display: 'flex', gap: '4px', marginBottom: '1rem', overflowX: 'auto' as const, paddingBottom: '2px' }}>
@@ -226,6 +232,7 @@ export default function PerfilPage() {
             </div>
           </div>
         )}
+
       </div>
 
       {/* TOAST */}
