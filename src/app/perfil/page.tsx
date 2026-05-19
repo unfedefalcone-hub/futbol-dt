@@ -88,7 +88,7 @@ export default function PerfilPage() {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.2rem' }}>
   <div style={{ borderRadius: '50%', border: '2px solid #74ACDF', overflow: 'hidden', flexShrink: 0 }}>
-    <Avatar seed={profile?.username || 'DT'} size={60} />
+    <Avatar seed={profile?.username || "DT2026"} size={60} />
   </div>
   <div>
     <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '22px', letterSpacing: '.04em' }}>Mi Perfil</div>
