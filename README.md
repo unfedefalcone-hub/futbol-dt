@@ -6,8 +6,8 @@
 ## 🚀 PRODUCCIÓN
 - **URL**: https://futbol-dt.vercel.app
 - **Repo GitHub**: https://github.com/unfedefalcone-hub/futbol-dt
-- **Rama activa**: `master` (deploy automático a Vercel)
-- **Nota Vercel**: cada push va a Preview — hacer "Promote to Production" manualmente
+- **Rama activa**: `master`
+- **⚠️ Nota Vercel**: cada push va a Preview — hacer "Promote to Production" manualmente en Deployments
 
 ---
 
@@ -25,7 +25,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 - Deploy en Vercel
 - Variables de entorno configuradas en Vercel
 
-### Pantallas migradas
+### Pantallas migradas y conectadas a Supabase
 | Pantalla | Ruta | Estado |
 |----------|------|--------|
 | Login | `/` | ✅ Google OAuth + redirect a /club |
@@ -34,10 +34,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 | Equipo | `/equipo` | ✅ Campo SVG + formaciones |
 | Ranking | `/ranking` | ✅ Datos reales de Supabase |
 | Ligas | `/ligas` | ✅ Crear + unirse |
-| Prode | `/prode` | ✅ Datos reales + guardar pronósticos |
+| Prode | `/prode` | ✅ 72 partidos reales + guardar pronósticos |
 | Perfil | `/perfil` | ✅ 5 tabs + logros |
 
-### Componentes y archivos clave
+### Archivos clave creados
 - `src/components/bot/BotFloat.tsx` — Bot DieBOT
 - `src/components/bot/BotWrapper.tsx` — Wrapper SSR
 - `src/components/ClientLayout.tsx` — Layout cliente con DieBOT global
@@ -51,20 +51,26 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 - Aparece en TODAS las pantallas via ClientLayout
 - Ambient, trivia, modales Hola y Reglamento
 
+### Base de datos Supabase
+- 11 tablas con RLS
+- 48 selecciones del Mundial 2026 cargadas (Grupos A-L)
+- 72 partidos de fase de grupos cargados
+- Jugadores: tabla vacía — pendiente cargar
+
 ---
 
 ## ⏳ PENDIENTE
 
 ### Prioridad Alta
 - Cargar jugadores reales del Mundial en tabla `players`
-- Cargar fixture real del Mundial 2026 en tabla `matches`
+- Verificar que Prode muestre los 72 partidos correctamente
 - Sistema de bloqueo del prode al kickoff
 - Calcular puntos del prode automáticamente post-partido
 
 ### Prioridad Media
 - Panel de administración del torneo
 - Ventana de cambios post fase de grupos
-- Agregar DieBOT a pantallas individualmente (actualmente via ClientLayout)
+- Supabase Realtime en vivo (hooks creados, falta activar)
 
 ### Prioridad Baja
 - Modo oscuro/claro
@@ -76,4 +82,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 ## 📌 PARA INICIAR PRÓXIMA SESIÓN
 Pegá este resumen al inicio del chat:
 
-> "Proyecto FUTBOL DT en Next.js 14 deployado en https://futbol-dt.vercel.app (rama master en GitHub). Supabase con 11 tablas, 16 selecciones, 65 jugadores y 8 partidos demo. Login Google OAuth funcionando. 8 pantallas migradas y conectadas a Supabase. DieBOT en todas las pantallas via ClientLayout. scoreEngine.ts y useRealtime.ts creados. Próximo paso: cargar jugadores y fixture real del Mundial 2026 en Supabase."
+> "Proyecto FUTBOL DT en Next.js 14 deployado en https://futbol-dt.vercel.app (rama master en GitHub). Supabase con 11 tablas, 48 selecciones y 72 partidos de fase de grupos cargados. Login Google OAuth funcionando. 8 pantallas migradas y conectadas a Supabase. DieBOT en todas las pantallas via ClientLayout. scoreEngine.ts y useRealtime.ts creados. Tabla players vacía. Próximo paso: cargar jugadores reales del Mundial 2026 y verificar Prode con 72 partidos."

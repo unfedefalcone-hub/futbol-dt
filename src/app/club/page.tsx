@@ -44,18 +44,56 @@ function shieldSVG(id: string, c1: string, c2: string) {
 }
 
 function jerseySVG(id: string, c1: string, c2: string) {
-  const base = `<path d="M15 4L8 10L2 8L2 20L10 20L10 52L40 52L40 20L48 20L48 8L42 10L35 4Q30 0 25 0Q20 0 15 4Z" fill="${c1}"/>`
-  const ov: Record<string, string> = {
+  const shape = `M15 4L8 10L2 8L2 20L10 20L10 52L40 52L40 20L48 20L48 8L42 10L35 4Q30 0 25 0Q20 0 15 4Z`
+  
+  const patterns: Record<string, string> = {
     solid: '',
-    stripes: `<rect x="10" y="0" width="6" height="52" fill="${c2}" opacity=".7"/><rect x="22" y="0" width="6" height="52" fill="${c2}" opacity=".7"/><rect x="34" y="0" width="6" height="52" fill="${c2}" opacity=".7"/>`,
-    horiz: `<rect x="2" y="14" width="46" height="7" fill="${c2}" opacity=".7"/><rect x="2" y="27" width="46" height="7" fill="${c2}" opacity=".7"/><rect x="2" y="40" width="46" height="7" fill="${c2}" opacity=".7"/>`,
-    diagonal: `<polygon points="2,8 48,8 48,30 2,52" fill="${c2}" opacity=".65"/>`,
-    halves: `<rect x="25" y="0" width="25" height="56" fill="${c2}" opacity=".7"/>`,
-    sash: `<polygon points="10,0 30,0 40,52 20,52" fill="${c2}" opacity=".65"/>`,
-    quarters: `<rect x="2" y="26" width="23" height="26" fill="${c2}" opacity=".7"/><rect x="25" y="0" width="23" height="26" fill="${c2}" opacity=".7"/>`,
-    collar: `<path d="M18 6Q25 14 32 6" stroke="${c2}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    stripes: `
+      <rect x="12" y="0" width="7" height="56" fill="${c2}" opacity=".85"/>
+      <rect x="25" y="0" width="7" height="56" fill="${c2}" opacity=".85"/>
+      <rect x="38" y="0" width="7" height="56" fill="${c2}" opacity=".85"/>`,
+    horiz: `
+      <rect x="0" y="15" width="50" height="8" fill="${c2}" opacity=".85"/>
+      <rect x="0" y="29" width="50" height="8" fill="${c2}" opacity=".85"/>
+      <rect x="0" y="43" width="50" height="8" fill="${c2}" opacity=".85"/>`,
+    diagonal: `
+      <polygon points="0,0 50,0 50,40 0,56" fill="${c2}" opacity=".75"/>`,
+    halves: `
+      <rect x="25" y="0" width="25" height="56" fill="${c2}" opacity=".85"/>`,
+    sash: `
+      <polygon points="12,0 28,0 38,52 22,52" fill="${c2}" opacity=".8"/>`,
+    quarters: `
+      <rect x="2" y="28" width="21" height="24" fill="${c2}" opacity=".85"/>
+      <rect x="27" y="0" width="21" height="24" fill="${c2}" opacity=".85"/>`,
+    collar: `
+      <path d="M17 6Q25 15 33 6" stroke="${c2}" stroke-width="6" fill="none" stroke-linecap="round"/>`,
   }
-  return base + (ov[id] || '') + `<path d="M17 5Q25 13 33 5" stroke="rgba(0,0,0,.2)" stroke-width="2" fill="none"/>`
+
+  return `
+    <defs>
+      <clipPath id="jersey-clip-${id}-${c1.replace('#','')}">
+        <path d="${shape}"/>
+      </clipPath>
+    </defs>
+    
+    <!-- Base -->
+    <path d="${shape}" fill="${c1}"/>
+    
+    <!-- Patron contenido dentro de la camiseta -->
+    <g clip-path="url(#jersey-clip-${id}-${c1.replace('#','')})">
+      ${patterns[id] || ''}
+    </g>
+    
+    <!-- Sombra cuello -->
+    <path d="M17 5Q25 13 33 5" stroke="rgba(0,0,0,.25)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    
+    <!-- Borde camiseta -->
+    <path d="${shape}" fill="none" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
+    
+    <!-- Sombra mangas -->
+    <path d="M2 8L8 10L10 20" stroke="rgba(0,0,0,.1)" stroke-width="1.5" fill="none"/>
+    <path d="M48 8L42 10L40 20" stroke="rgba(0,0,0,.1)" stroke-width="1.5" fill="none"/>
+  `
 }
 
 export default function ClubPage() {
@@ -118,8 +156,6 @@ export default function ClubPage() {
 
   return (
     <main style={s.page}>
-      <BotWrapper />
-      
       {/* TOPBAR */}
       <div style={{ height: '54px', background: 'rgba(7,9,15,.97)', borderBottom: '1px solid rgba(116,172,223,0.13)', display: 'flex', alignItems: 'center', padding: '0 1rem', gap: '1rem' }}>
         <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '20px', letterSpacing: '.05em', color: '#f8faff' }}>
