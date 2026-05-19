@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import BotWrapper from '@/components/bot/BotWrapper'
+import ClientLayout from '@/components/ClientLayout'
 
 export const metadata: Metadata = {
   title: 'Futbol DT — Mundial 2026',
@@ -15,8 +15,9 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        {children}
-        <BotWrapper />
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   )
