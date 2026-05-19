@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import dynamic from 'next/dynamic'
-import Avatar from '@/components/ui/Avatar'
+import Avatar, { AvatarPicker, AVATARS } from '@/components/ui/Avatar'
 const BotWrapper = dynamic(() => import('@/components/bot/BotWrapper'), { ssr: false })
 
 const BADGES = [
@@ -56,6 +56,7 @@ export default function PerfilPage() {
   const supabase = createClient()
   const [tab, setTab] = useState('datos')
   const [toast, setToast] = useState('')
+  const [avatarIdx, setAvatarIdx] = useState(0)
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -93,8 +94,8 @@ export default function PerfilPage() {
 
         {/* HEADER PERFIL */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.2rem' }}>
-          <div style={{ borderRadius: '50%', border: '2px solid #74ACDF', overflow: 'hidden', flexShrink: 0 }}>
-            <Avatar seed="DT2026" size={60} />
+          <div style={{ borderRadius: '50%', border: '2px solid #74ACDF', overflow: 'hidden', flexShrink: 0, cursor: 'pointer' }} onClick={() => setTab('cfg')}>
+            <Avatar seed={String(avatarIdx)} size={60} />
           </div>
           <div>
             <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '22px', letterSpacing: '.04em' }}>Mi Perfil</div>
@@ -218,19 +219,31 @@ export default function PerfilPage() {
 
         {/* TAB CONFIG */}
         {tab === 'cfg' && (
-          <div style={s.card}>
-            <div style={s.cardHdr}>Configuración</div>
-            <div style={s.cardBody}>
-              <button onClick={() => router.push('/club')}
-                style={{ width: '100%', padding: '11px', borderRadius: '9px', background: 'rgba(116,172,223,.1)', border: '1px solid rgba(116,172,223,.3)', color: '#74ACDF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginBottom: '8px' }}>
-                ✏️ Editar mi club
-              </button>
-              <button onClick={handleSignOut}
-                style={{ width: '100%', padding: '11px', borderRadius: '9px', background: 'rgba(248,81,73,.08)', border: '1px solid rgba(248,81,73,.3)', color: '#f85149', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                🚪 Cerrar sesión
-              </button>
+          <>
+            <div style={s.card}>
+              <div style={s.cardHdr}>🎨 Elegí tu avatar</div>
+              <div style={s.cardBody}>
+                <AvatarPicker selected={avatarIdx} onSelect={setAvatarIdx} />
+                <div style={{ fontSize: '11px', color: '#6a88aa', marginTop: '10px', textAlign: 'center' as const }}>
+                  Tocá un avatar para seleccionarlo
+                </div>
+              </div>
             </div>
-          </div>
+
+            <div style={s.card}>
+              <div style={s.cardHdr}>Configuración</div>
+              <div style={s.cardBody}>
+                <button onClick={() => router.push('/club')}
+                  style={{ width: '100%', padding: '11px', borderRadius: '9px', background: 'rgba(116,172,223,.1)', border: '1px solid rgba(116,172,223,.3)', color: '#74ACDF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginBottom: '8px' }}>
+                  ✏️ Editar mi club
+                </button>
+                <button onClick={handleSignOut}
+                  style={{ width: '100%', padding: '11px', borderRadius: '9px', background: 'rgba(248,81,73,.08)', border: '1px solid rgba(248,81,73,.3)', color: '#f85149', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                  🚪 Cerrar sesión
+                </button>
+              </div>
+            </div>
+          </>
         )}
 
       </div>
