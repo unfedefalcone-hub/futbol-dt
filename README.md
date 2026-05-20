@@ -24,23 +24,25 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 - Google OAuth funcionando
 - Deploy en Vercel
 - Variables de entorno configuradas en Vercel
+- DiceBear instalado (`@dicebear/core` + `@dicebear/collection`)
 
 ### Pantallas migradas y conectadas a Supabase
 | Pantalla | Ruta | Estado |
 |----------|------|--------|
 | Login | `/` | ✅ Google OAuth + redirect a /club |
-| Club | `/club` | ✅ Escudos + camisetas SVG + Supabase |
+| Club | `/club` | ✅ Escudos SVG + camisetas SVG mejoradas + iniciales en escudo |
 | Jugadores | `/jugadores` | ✅ Datos reales de Supabase + filtros |
 | Equipo | `/equipo` | ✅ Campo SVG + formaciones |
 | Ranking | `/ranking` | ✅ Datos reales de Supabase |
 | Ligas | `/ligas` | ✅ Crear + unirse |
 | Prode | `/prode` | ✅ 72 partidos reales + guardar pronósticos |
-| Perfil | `/perfil` | ✅ 5 tabs + logros |
+| Perfil | `/perfil` | ✅ 5 tabs + logros + galería avatares DiceBear |
 
-### Archivos clave creados
+### Archivos clave
 - `src/components/bot/BotFloat.tsx` — Bot DieBOT
 - `src/components/bot/BotWrapper.tsx` — Wrapper SSR
 - `src/components/ClientLayout.tsx` — Layout cliente con DieBOT global
+- `src/components/ui/Avatar.tsx` — Avatares DiceBear (18 opciones, 4 estilos)
 - `src/hooks/useSupabaseData.ts` — usePlayers, useRanking, useProde
 - `src/hooks/useRealtime.ts` — Realtime hooks para eventos en vivo
 - `src/lib/scoreEngine.ts` — Motor de puntajes con reglamento oficial
@@ -57,29 +59,37 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 - 72 partidos de fase de grupos cargados
 - Jugadores: tabla vacía — pendiente cargar
 
+### Mejoras de diseño completadas
+- ✅ Camisetas SVG con clipPath — patrones contenidos dentro de la forma
+- ✅ Iniciales del club en el escudo en tiempo real
+- ✅ Galería de 18 avatares DiceBear en perfil (avataaars, bottts, pixelArt, funEmoji)
+- ✅ Click en avatar del header abre tab Config
+
 ---
 
 ## ⏳ PENDIENTE
 
-### Prioridad Alta
+### Datos (urgente — antes del 11 de junio)
 - Cargar jugadores reales del Mundial en tabla `players`
 - Verificar que Prode muestre los 72 partidos correctamente
 - Sistema de bloqueo del prode al kickoff
 - Calcular puntos del prode automáticamente post-partido
 
-### Prioridad Media
+### Diseño (antes del lanzamiento)
+- Más opciones de camisetas + previews más grandes
+- Rediseño de bubbles y modales del bot
+- Ajuste de diseños de avatares (opcional)
+
+### Post lanzamiento
 - Panel de administración del torneo
 - Ventana de cambios post fase de grupos
-- Supabase Realtime en vivo (hooks creados, falta activar)
-
-### Prioridad Baja
+- Supabase Realtime en vivo
 - Modo oscuro/claro
 - Compartir resultados en redes sociales
-- Drag & drop en el campo de juego
 
 ---
 
 ## 📌 PARA INICIAR PRÓXIMA SESIÓN
 Pegá este resumen al inicio del chat:
 
-> "Proyecto FUTBOL DT en Next.js 14 deployado en https://futbol-dt.vercel.app (rama master en GitHub). Supabase con 11 tablas, 48 selecciones y 72 partidos de fase de grupos cargados. Login Google OAuth funcionando. 8 pantallas migradas y conectadas a Supabase. DieBOT en todas las pantallas via ClientLayout. scoreEngine.ts y useRealtime.ts creados. Tabla players vacía. Próximo paso: cargar jugadores reales del Mundial 2026 y verificar Prode con 72 partidos."
+> "Proyecto FUTBOL DT en Next.js 14 deployado en https://futbol-dt.vercel.app (rama master en GitHub). Supabase con 11 tablas, 48 selecciones y 72 partidos de fase de grupos cargados. Login Google OAuth funcionando. 8 pantallas migradas y conectadas a Supabase. DieBOT en todas las pantallas via ClientLayout. scoreEngine.ts y useRealtime.ts creados. Camisetas SVG mejoradas con clipPath. Iniciales del club en escudo en tiempo real. Galería de 18 avatares DiceBear en perfil. Tabla players vacía. Próximo paso: cargar jugadores reales del Mundial 2026 y verificar Prode con 72 partidos."

@@ -1,175 +1,178 @@
 'use client'
-
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import BotFloat from '@/components/bot/BotFloat'
+import { usePlayers } from '@/hooks/useSupabaseData'
+import { useTeamStore } from '@/store/teamStore'
+import { useAuthStore } from '@/store/authStore'
+import dynamic from 'next/dynamic'
 
-const PLAYERS = [
-  { id: 1, name: 'E. Martínez', nation: '🇦🇷', pos: 'GK', value: 40 },
-  { id: 2, name: 'F. Armani', nation: '🇦🇷', pos: 'GK', value: 12 },
-  { id: 3, name: 'N. Molina', nation: '🇦🇷', pos: 'DEF', value: 45 },
-  { id: 4, name: 'C. Romero', nation: '🇦🇷', pos: 'DEF', value: 65 },
-  { id: 5, name: 'L. Martínez', nation: '🇦🇷', pos: 'DEF', value: 55 },
-  { id: 6, name: 'L. Messi', nation: '🇦🇷', pos: 'FWD', value: 200 },
-  { id: 7, name: 'J. Álvarez', nation: '🇦🇷', pos: 'FWD', value: 90 },
-  { id: 8, name: 'Mac Allister', nation: '🇦🇷', pos: 'MID', value: 75 },
-  { id: 9, name: 'R. De Paul', nation: '🇦🇷', pos: 'MID', value: 60 },
-  { id: 10, name: 'M. Maignan', nation: '🇫🇷', pos: 'GK', value: 50 },
-  { id: 11, name: 'K. Mbappé', nation: '🇫🇷', pos: 'FWD', value: 180 },
-  { id: 12, name: 'A. Griezmann', nation: '🇫🇷', pos: 'FWD', value: 55 },
-  { id: 13, name: 'Tchouaméni', nation: '🇫🇷', pos: 'MID', value: 80 },
-  { id: 14, name: 'Bellingham', nation: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', pos: 'MID', value: 180 },
-  { id: 15, name: 'Alisson', nation: '🇧🇷', pos: 'GK', value: 45 },
-  { id: 16, name: 'Vinicius Jr', nation: '🇧🇷', pos: 'FWD', value: 150 },
-  { id: 17, name: 'Rodrygo', nation: '🇧🇷', pos: 'FWD', value: 90 },
-  { id: 18, name: 'Casemiro', nation: '🇧🇷', pos: 'MID', value: 40 },
-  { id: 19, name: 'Marquinhos', nation: '🇧🇷', pos: 'DEF', value: 45 },
-  { id: 20, name: 'H. Kane', nation: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', pos: 'FWD', value: 100 },
-  { id: 21, name: 'P. Foden', nation: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', pos: 'MID', value: 150 },
-  { id: 22, name: 'J. Kimmich', nation: '🇩🇪', pos: 'MID', value: 70 },
-  { id: 23, name: 'L. Yamal', nation: '🇪🇸', pos: 'FWD', value: 120 },
-  { id: 24, name: 'R. Dias', nation: '🇵🇹', pos: 'DEF', value: 80 },
-  { id: 25, name: 'F. Valverde', nation: '🇺🇾', pos: 'MID', value: 100 },
-]
+const BotWrapper = dynamic(() => import('@/components/bot/BotWrapper'), { ssr: false })
 
-const BUDGET = 500
-const MAX_PLAYERS = 23
-const MAX_PER_NATION = 3
-const POS_LABEL: Record<string, string> = { GK: 'ARQ', DEF: 'DEF', MID: 'MED', FWD: 'DEL' }
-const POS_COLOR: Record<string, string> = { GK: '#f0c040', DEF: '#74ACDF', MID: '#3fb950', FWD: '#f85149' }
-
-const FILTERS = [
-  { key: 'ALL', label: 'Todos' },
-  { key: 'GK', label: 'Arquero' },
-  { key: 'DEF', label: 'Defensor' },
-  { key: 'MID', label: 'Mediocampista' },
-  { key: 'FWD', label: 'Delantero' },
-]
+const POSITION_LABEL: Record<string, string> = {
+  GK: '🧤 Arquero', DEF: '🛡️ Defensor',
+  MID: '⚡ Mediocampista', FWD: '⚽ Delantero'
+}
+const POSITION_ORDER = ['GK', 'DEF', 'MID', 'FWD']
+const BUDGET = 100
 
 export default function JugadoresPage() {
   const router = useRouter()
-  const [selected, setSelected] = useState<Set<number>>(new Set())
-  const [filter, setFilter] = useState('ALL')
+  const { players, loading } = usePlayers()
+  const { selectedPlayers, addPlayer, removePlayer } = useTeamStore()
+  const { profile } = useAuthStore()
 
-  const budgetUsed = PLAYERS.filter(p => selected.has(p.id)).reduce((sum, p) => sum + p.value, 0)
-  const budgetLeft = BUDGET - budgetUsed
+  const [search, setSearch] = useState('')
+  const [posFilter, setPosFilter] = useState('ALL')
+  const [nationFilter, setNationFilter] = useState('ALL')
 
-  const nationCount = (nation: string) =>
-    PLAYERS.filter(p => selected.has(p.id) && p.nation === nation).length
+  const spent = selectedPlayers.reduce((s: number, p: any) => s + (p.value || 0), 0)
+  const remaining = BUDGET - spent
 
-  const togglePlayer = (player: typeof PLAYERS[0]) => {
-    const next = new Set(selected)
-    if (next.has(player.id)) {
-      next.delete(player.id)
+  // Naciones únicas para el filtro
+  const nations = useMemo(() => {
+    const set = new Set(players.map((p: any) => p.nations?.name).filter(Boolean))
+    return Array.from(set).sort() as string[]
+  }, [players])
+
+  const filtered = useMemo(() => players.filter((p: any) => {
+    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.nations?.name?.toLowerCase().includes(search.toLowerCase())
+    const matchPos = posFilter === 'ALL' || p.position === posFilter
+    const matchNation = nationFilter === 'ALL' || p.nations?.name === nationFilter
+    return matchSearch && matchPos && matchNation
+  }), [players, search, posFilter, nationFilter])
+
+  const isSelected = (id: string) => selectedPlayers.some((p: any) => p.id === id)
+
+  function togglePlayer(player: any) {
+    if (isSelected(player.id)) {
+      removePlayer(player.id)
     } else {
-      if (next.size >= MAX_PLAYERS) return
-      if (budgetLeft < player.value) return
-      if (nationCount(player.nation) >= MAX_PER_NATION) return
-      next.add(player.id)
+      if (selectedPlayers.length >= 15) return
+      if (remaining < player.value) return
+      addPlayer(player)
     }
-    setSelected(next)
   }
 
-  const filtered = filter === 'ALL' ? PLAYERS : PLAYERS.filter(p => p.pos === filter)
-
-  const s = {
-    page: { minHeight: '100vh', background: '#07090f', color: '#ddeeff', fontFamily: "'DM Sans', sans-serif", paddingBottom: '5rem' } as React.CSSProperties,
-    inner: { maxWidth: '500px', margin: '0 auto', padding: '1rem' } as React.CSSProperties,
-  }
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen bg-[#07090f]">
+      <div className="text-[#74ACDF] font-['Bebas_Neue'] text-2xl animate-pulse">
+        Cargando jugadores...
+      </div>
+    </div>
+  )
 
   return (
-    <main style={s.page}>
-      {/* TOPBAR */}
-      <div style={{ height: '54px', background: 'rgba(7,9,15,.97)', borderBottom: '1px solid rgba(116,172,223,0.13)', display: 'flex', alignItems: 'center', padding: '0 1rem', gap: '1rem', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '20px', color: '#f8faff' }}>
-          FUTBOL <span style={{ color: '#74ACDF' }}>DT</span>
-        </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px', background: '#161b22', border: '1px solid rgba(116,172,223,0.27)', borderRadius: '20px', padding: '4px 12px' }}>
-          <span style={{ fontSize: '10px', color: '#6a88aa', fontWeight: 600, letterSpacing: '.06em' }}>PRESUPUESTO</span>
-          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', color: '#f0c040' }}>${budgetLeft}M</span>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#07090f] pb-24">
+      <BotWrapper />
 
-      <div style={s.inner}>
-        <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '22px', letterSpacing: '.04em', margin: '1rem 0 .2rem' }}>Selección de Jugadores</div>
-        <div style={{ fontSize: '12px', color: '#6a88aa', marginBottom: '1rem' }}>Armá tu equipo de 23 jugadores respetando el presupuesto</div>
-
-        {/* BUDGET BAR */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem', flexWrap: 'wrap' as const }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#161b22', border: '1px solid rgba(116,172,223,0.27)', borderRadius: '20px', padding: '4px 12px' }}>
-            <span style={{ fontSize: '10px', color: '#6a88aa', fontWeight: 600, letterSpacing: '.06em' }}>SELECCIONADOS</span>
-            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '17px', color: '#f0c040' }}>
-              <strong style={{ color: '#f8faff' }}>{selected.size}</strong>/{MAX_PLAYERS}
-            </span>
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-[#07090f]/95 backdrop-blur border-b border-[#74ACDF]/20 p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="font-['Bebas_Neue'] text-2xl text-[#74ACDF] tracking-widest">
+            JUGADORES
+          </h1>
+          <div className="text-right">
+            <div className="text-[#f0c040] font-bold text-lg font-['Bebas_Neue']">
+              ${remaining.toFixed(1)}M
+            </div>
+            <div className="text-xs text-[#74ACDF]/60">
+              {selectedPlayers.length}/15 jugadores
+            </div>
           </div>
-          <button
-            onClick={() => router.push('/equipo')}
-            style={{ marginLeft: 'auto', padding: '7px 14px', borderRadius: '7px', border: '1px solid #74ACDF', background: 'rgba(116,172,223,.1)', color: '#74ACDF', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-            Ver mi equipo →
-          </button>
         </div>
 
-        {/* FILTROS */}
-        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' as const, marginBottom: '1rem' }}>
-          {FILTERS.map(f => (
-            <button key={f.key} onClick={() => setFilter(f.key)}
-              style={{ fontSize: '11px', padding: '5px 11px', borderRadius: '20px', border: `1px solid ${filter === f.key ? '#74ACDF' : 'rgba(116,172,223,0.27)'}`, background: filter === f.key ? 'rgba(116,172,223,.12)' : 'transparent', color: filter === f.key ? '#74ACDF' : '#6a88aa', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'all .15s' }}>
-              {f.label}
+        {/* Búsqueda */}
+        <input
+          className="w-full bg-[#0d1117] border border-[#74ACDF]/30 rounded-xl px-4 py-2 text-white text-sm outline-none focus:border-[#74ACDF] mb-2"
+          placeholder="🔍 Buscar jugador o selección..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+
+        {/* Filtros posición */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {['ALL', ...POSITION_ORDER].map(pos => (
+            <button
+              key={pos}
+              onClick={() => setPosFilter(pos)}
+              className={`shrink-0 px-3 py-1 rounded-full text-xs font-bold border transition-all
+                ${posFilter === pos
+                  ? 'bg-[#74ACDF] text-[#07090f] border-[#74ACDF]'
+                  : 'border-[#74ACDF]/30 text-[#74ACDF]/60 hover:border-[#74ACDF]/60'
+                }`}
+            >
+              {pos === 'ALL' ? 'Todos' : POSITION_LABEL[pos]}
             </button>
           ))}
         </div>
+      </div>
 
-        {/* GRID DE JUGADORES */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px' }}>
-          {filtered.map(p => {
-            const sel = selected.has(p.id)
-            const canAdd = !sel && selected.size < MAX_PLAYERS && budgetLeft >= p.value && nationCount(p.nation) < MAX_PER_NATION
+      {/* Lista de jugadores */}
+      <div className="p-4 space-y-2">
+        {filtered.length === 0 ? (
+          <div className="text-center text-[#74ACDF]/40 py-16 text-sm">
+            No se encontraron jugadores
+          </div>
+        ) : (
+          filtered.map((player: any) => {
+            const sel = isSelected(player.id)
+            const canAdd = !sel && selectedPlayers.length < 15 && remaining >= player.value
             return (
-              <div key={p.id} onClick={() => togglePlayer(p)}
-                style={{
-                  background: sel ? 'rgba(116,172,223,.15)' : '#161b22',
-                  border: `1.5px solid ${sel ? '#74ACDF' : 'rgba(116,172,223,0.13)'}`,
-                  borderRadius: '10px', overflow: 'hidden', cursor: canAdd || sel ? 'pointer' : 'not-allowed',
-                  opacity: !sel && !canAdd ? 0.45 : 1, transition: 'all .2s',
-                }}>
-                <div style={{ height: '60px', background: sel ? 'rgba(116,172,223,.2)' : '#1c2333', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', fontSize: '28px' }}>
-                  {p.nation}
-                  <span style={{ position: 'absolute', top: '5px', right: '5px', fontSize: '9px', fontWeight: 700, padding: '2px 5px', borderRadius: '4px', background: POS_COLOR[p.pos] + '33', color: POS_COLOR[p.pos] }}>
-                    {POS_LABEL[p.pos]}
-                  </span>
-                  {sel && (
-                    <span style={{ position: 'absolute', top: '5px', left: '5px', fontSize: '11px', background: '#74ACDF', borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000e2e', fontWeight: 700 }}>✓</span>
-                  )}
+              <div
+                key={player.id}
+                onClick={() => togglePlayer(player)}
+                className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer
+                  ${sel
+                    ? 'bg-[#74ACDF]/10 border-[#74ACDF] shadow-[0_0_12px_#74ACDF33]'
+                    : canAdd
+                      ? 'bg-[#0d1117] border-[#ffffff10] hover:border-[#74ACDF]/40'
+                      : 'bg-[#0d1117] border-[#ffffff08] opacity-50'
+                  }`}
+              >
+                {/* Bandera */}
+                <div className="text-2xl w-8 text-center">
+                  <span>{player.nations?.flag_emoji || '🏳️'}</span>
                 </div>
-                <div style={{ padding: '7px 8px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 600, marginBottom: '2px', whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
-                  <div style={{ fontSize: '10px', color: '#6a88aa' }}>{p.nation}</div>
-                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '14px', color: '#f0c040', marginTop: '2px' }}>${p.value}M</div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-white text-sm truncate">{player.name}</div>
+                  <div className="text-xs text-[#74ACDF]/60">
+                    {POSITION_LABEL[player.position]} · {player.nations?.name}
+                  </div>
+                </div>
+
+                {/* Stats rápidos */}
+                <div className="flex gap-2 text-xs text-[#74ACDF]/50 shrink-0">
+                  {player.goals > 0 && <span>⚽{player.goals}</span>}
+                  {player.assists > 0 && <span>🅰️{player.assists}</span>}
+                </div>
+
+                {/* Valor + check */}
+                <div className="text-right shrink-0">
+                  <div className={`font-['Bebas_Neue'] text-lg ${sel ? 'text-[#f0c040]' : 'text-white'}`}>
+                    ${player.value}M
+                  </div>
+                  {sel && <div className="text-[#f0c040] text-xs">✓ Selec.</div>}
                 </div>
               </div>
             )
-          })}
-        </div>
+          })
+        )}
       </div>
 
-      {/* BOTTOM NAV */}
-      <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '500px', height: '58px', background: 'rgba(7,9,15,.97)', borderTop: '1px solid rgba(116,172,223,0.13)', display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '0 .3rem', zIndex: 200 }}>
-        {[
-          { label: 'Jugadores', icon: '👥', path: '/jugadores' },
-          { label: 'Equipo', icon: '⚽', path: '/equipo' },
-          { label: 'Ranking', icon: '🏆', path: '/ranking' },
-          { label: 'Ligas', icon: '🔗', path: '/ligas' },
-          { label: 'Prode', icon: '🎯', path: '/prode' },
-        ].map(item => (
-          <button key={item.path} onClick={() => router.push(item.path)}
-            style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '5px 10px', borderRadius: '10px', border: 'none', background: 'transparent', fontFamily: "'DM Sans', sans-serif", flex: 1 }}>
-            <span style={{ fontSize: '19px', lineHeight: 1 }}>{item.icon}</span>
-            <span style={{ fontSize: '10px', fontWeight: 600, color: item.path === '/jugadores' ? '#74ACDF' : '#6a88aa' }}>{item.label}</span>
+      {/* FAB → Equipo */}
+      {selectedPlayers.length > 0 && (
+        <div className="fixed bottom-20 right-4 z-20">
+          <button
+            onClick={() => router.push('/equipo')}
+            className="bg-[#f0c040] text-[#07090f] font-['Bebas_Neue'] text-lg px-5 py-3 rounded-2xl shadow-lg shadow-[#f0c040]/30 hover:scale-105 transition-transform"
+          >
+            VER EQUIPO ({selectedPlayers.length})
           </button>
-        ))}
-      </div>
-
-      <BotFloat />
-    </main>
+        </div>
+      )}
+    </div>
   )
 }

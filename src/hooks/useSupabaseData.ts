@@ -15,7 +15,7 @@ export function usePlayers() {
         .from('players')
         .select(`
           id, name, position, value, goals, assists, yellow_cards, red_cards,
-          nations ( id, name, flag_url )
+          nations ( id, name, flag_emoji )
         `)
         .order('value', { ascending: false })
 
