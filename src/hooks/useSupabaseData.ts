@@ -36,17 +36,20 @@ export function usePlayers() {
       if (error) console.error('Error:', error)
 
       if (playersData && nationsData) {
+        console.log('Primera nación:', nationsData[0])
+        console.log('Primer jugador:', playersData[0])
         const nationsMap: Record<string, any> = {}
         nationsData.forEach(n => { nationsMap[n.id] = n })
+        console.log('Nation ID del jugador:', playersData[0]?.nation_id)
+        console.log('Nación encontrada:', nationsMap[playersData[0]?.nation_id])
 
         const merged = playersData.map(p => ({
           ...p,
           nations: nationsMap[p.nation_id] ? {
           ...nationsMap[p.nation_id],
-          flag_emoji: FLAG_MAP[nationsMap[p.nation_id].flag_emoji] || '🏳️',
-          flag_code: nationsMap[p.nation_id].flag_emoji?.toLowerCase()
+          flag_emoji: nationsMap[p.nation_id].flag_emoji  // 'FR', 'BR', etc — sin convertir
         } : null
-        }))
+      }))
         setPlayers(merged)
       }
       setLoading(false)

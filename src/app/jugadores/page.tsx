@@ -15,20 +15,6 @@ const POSITION_LABEL: Record<string, string> = {
 const POSITION_ORDER = ['GK', 'DEF', 'MID', 'FWD']
 const BUDGET = 500
 
-const FLAG_EMOJIS: Record<string, string> = {
-  AR: '🇦🇷', BR: '🇧🇷', FR: '🇫🇷', ES: '🇪🇸', DE: '🇩🇪',
-  EN: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', GB: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', PT: '🇵🇹', IT: '🇮🇹', NL: '🇳🇱',
-  MX: '🇲🇽', US: '🇺🇸', CA: '🇨🇦', UY: '🇺🇾', CO: '🇨🇴',
-  JP: '🇯🇵', KR: '🇰🇷', MA: '🇲🇦', SN: '🇸🇳', NG: '🇳🇬',
-  HR: '🇭🇷', BE: '🇧🇪', CH: '🇨🇭', NO: '🇳🇴', SE: '🇸🇪',
-  PL: '🇵🇱', UZ: '🇺🇿', SA: '🇸🇦', EG: '🇪🇬', IR: '🇮🇷',
-  AU: '🇦🇺', NZ: '🇳🇿', GH: '🇬🇭', PA: '🇵🇦', EC: '🇪🇨',
-  PY: '🇵🇾', TR: '🇹🇷', AT: '🇦🇹', DZ: '🇩🇿', JO: '🇯🇴',
-  QA: '🇶🇦', BA: '🇧🇦', CZ: '🇨🇿', ZA: '🇿🇦', CI: '🇨🇮',
-  TN: '🇹🇳', CV: '🇨🇻', CD: '🇨🇩', HT: '🇭🇹', CW: '🇨🇼',
-  'GB-SCT': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'GB-ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-}
-
 export default function JugadoresPage() {
   const router = useRouter()
   const { players, loading } = usePlayers()
@@ -130,7 +116,6 @@ export default function JugadoresPage() {
           </div>
         ) : (
           filtered.map((player: any) => {
-            console.log(player.name, player.nations)
             const sel = isSelected(player.id)
             const canAdd = !sel && selectedPlayers.length < 15 && remaining >= player.value
             return (
@@ -146,8 +131,15 @@ export default function JugadoresPage() {
                   }`}
               >
                 {/* Bandera */}
-                <div className="w-8 h-6 flex items-center justify-center overflow-hidden rounded">
-                   <span>{FLAG_EMOJIS[player.nations?.flag_emoji] || '🏳️'}</span>
+                <div className="w-8 h-5 overflow-hidden rounded flex-shrink-0">
+                  <img 
+                    src={`https://flagcdn.com/w40/${player.nations?.flag_emoji?.toLowerCase()}.png`}
+                    alt={player.nations?.name || ''}
+                    width={32}
+                    height={20}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  />
                 </div>
 
                 {/* Info */}
