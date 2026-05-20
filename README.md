@@ -31,7 +31,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 |----------|------|--------|
 | Login | `/` | ✅ Google OAuth + redirect a /club |
 | Club | `/club` | ✅ Escudos SVG + camisetas SVG mejoradas + iniciales en escudo |
-| Jugadores | `/jugadores` | ✅ Datos reales de Supabase + filtros |
+| Jugadores | `/jugadores` | ✅ Datos reales + banderas con flagcdn.com + $500M presupuesto |
 | Equipo | `/equipo` | ✅ Campo SVG + formaciones |
 | Ranking | `/ranking` | ✅ Datos reales de Supabase |
 | Ligas | `/ligas` | ✅ Crear + unirse |
@@ -43,7 +43,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 - `src/components/bot/BotWrapper.tsx` — Wrapper SSR
 - `src/components/ClientLayout.tsx` — Layout cliente con DieBOT global
 - `src/components/ui/Avatar.tsx` — Avatares DiceBear (18 opciones, 4 estilos)
-- `src/hooks/useSupabaseData.ts` — usePlayers, useRanking, useProde
+- `src/hooks/useSupabaseData.ts` — usePlayers, useRanking, useProde + merge manual nations
 - `src/hooks/useRealtime.ts` — Realtime hooks para eventos en vivo
 - `src/lib/scoreEngine.ts` — Motor de puntajes con reglamento oficial
 - `src/app/layout.tsx` — Layout global con ClientLayout
@@ -55,22 +55,24 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 
 ### Base de datos Supabase
 - 11 tablas con RLS
+- RLS policies públicas en `players` y `nations`
 - 48 selecciones del Mundial 2026 cargadas (Grupos A-L)
 - 72 partidos de fase de grupos cargados
-- Jugadores: tabla vacía — pendiente cargar
+- 118 jugadores reales cargados (Brasil, Francia, Bélgica, Portugal, Croacia, Japón, Escocia, Noruega)
 
 ### Mejoras de diseño completadas
 - ✅ Camisetas SVG con clipPath — patrones contenidos dentro de la forma
 - ✅ Iniciales del club en el escudo en tiempo real
 - ✅ Galería de 18 avatares DiceBear en perfil (avataaars, bottts, pixelArt, funEmoji)
-- ✅ Click en avatar del header abre tab Config
+- ✅ Banderas de países con flagcdn.com (código ISO → imagen)
+- ✅ Presupuesto corregido a $500M
 
 ---
 
 ## ⏳ PENDIENTE
 
 ### Datos (urgente — antes del 11 de junio)
-- Cargar jugadores reales del Mundial en tabla `players`
+- Cargar jugadores confirmados restantes: Argentina, España, Inglaterra, Alemania, Países Bajos, Colombia (se confirman entre 21-30 mayo)
 - Verificar que Prode muestre los 72 partidos correctamente
 - Sistema de bloqueo del prode al kickoff
 - Calcular puntos del prode automáticamente post-partido
@@ -78,7 +80,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 ### Diseño (antes del lanzamiento)
 - Más opciones de camisetas + previews más grandes
 - Rediseño de bubbles y modales del bot
-- Ajuste de diseños de avatares (opcional)
+- Conectar equipo con jugadores reales de Supabase (actualmente usa DEMO_PLAYERS)
 
 ### Post lanzamiento
 - Panel de administración del torneo
@@ -92,4 +94,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 ## 📌 PARA INICIAR PRÓXIMA SESIÓN
 Pegá este resumen al inicio del chat:
 
-> "Proyecto FUTBOL DT en Next.js 14 deployado en https://futbol-dt.vercel.app (rama master en GitHub). Supabase con 11 tablas, 48 selecciones y 72 partidos de fase de grupos cargados. Login Google OAuth funcionando. 8 pantallas migradas y conectadas a Supabase. DieBOT en todas las pantallas via ClientLayout. scoreEngine.ts y useRealtime.ts creados. Camisetas SVG mejoradas con clipPath. Iniciales del club en escudo en tiempo real. Galería de 18 avatares DiceBear en perfil. Tabla players vacía. Próximo paso: cargar jugadores reales del Mundial 2026 y verificar Prode con 72 partidos."
+> "Proyecto FUTBOL DT en Next.js 14 deployado en https://futbol-dt.vercel.app (rama master en GitHub). Supabase con 11 tablas, 48 selecciones, 72 partidos y 118 jugadores reales cargados. RLS policies públicas en players y nations. Login Google OAuth funcionando. 8 pantallas migradas y conectadas a Supabase. DieBOT en todas las pantallas via ClientLayout. Banderas con flagcdn.com. Avatares DiceBear en perfil. Próximo paso: cargar jugadores de Argentina, España, Inglaterra, Alemania, Países Bajos y Colombia cuando confirmen sus listas (entre 21-30 mayo)."
