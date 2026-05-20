@@ -75,9 +75,6 @@ export default function JugadoresPage() {
       </div>
     </div>
   )
-
-  filtered.map((player: any) => {
-  console.log(player.name, player.nations)
   
   return (
     <div className="min-h-screen bg-[#07090f] pb-24">
@@ -133,6 +130,7 @@ export default function JugadoresPage() {
           </div>
         ) : (
           filtered.map((player: any) => {
+            console.log(player.name, player.nations)
             const sel = isSelected(player.id)
             const canAdd = !sel && selectedPlayers.length < 15 && remaining >= player.value
             return (
