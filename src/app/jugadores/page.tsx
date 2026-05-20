@@ -76,6 +76,9 @@ export default function JugadoresPage() {
     </div>
   )
 
+  filtered.map((player: any) => {
+  console.log(player.name, player.nations)
+  
   return (
     <div className="min-h-screen bg-[#07090f] pb-24">
       <BotWrapper />
