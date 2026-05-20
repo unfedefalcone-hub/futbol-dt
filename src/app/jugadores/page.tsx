@@ -145,8 +145,13 @@ export default function JugadoresPage() {
                   }`}
               >
                 {/* Bandera */}
-                <div className="text-2xl w-8 text-center">
-                  <span>{FLAG_EMOJIS[player.nations?.flag_emoji] || '🏳️'}</span>
+                <div className="w-8 h-6 flex items-center justify-center">
+                  <img 
+                    src={`https://flagcdn.com/w40/${player.nations?.flag_emoji?.toLowerCase()}.png`}
+                    alt={player.nations?.name}
+                    className="w-8 h-5 object-cover rounded"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  />
                 </div>
 
                 {/* Info */}
