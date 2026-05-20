@@ -15,11 +15,12 @@ export function usePlayers() {
         .from('players')
         .select(`
           id, name, position, value, goals, assists, yellow_cards, red_cards,
-          nations ( id, name, flag_emoji )
+          nations!inner ( id, name, flag_emoji, group_name )
         `)
         .order('value', { ascending: false })
 
-      if (!error && data) setPlayers(data)
+      if (error) console.error('Error fetching players:', error)
+      if (data) setPlayers(data)
       setLoading(false)
     }
     fetchData()
