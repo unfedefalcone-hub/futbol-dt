@@ -13,7 +13,14 @@ const POSITION_LABEL: Record<string, string> = {
   MID: '⚡ Mediocampista', FWD: '⚽ Delantero'
 }
 const POSITION_ORDER = ['GK', 'DEF', 'MID', 'FWD']
-const BUDGET = 100
+const BUDGET = 500
+
+function isoToEmoji(code: string): string {
+  if (!code) return '🏳️'
+  return code.toUpperCase().split('').map(c => 
+    String.fromCodePoint(c.charCodeAt(0) + 127397)
+  ).join('')
+}
 
 export default function JugadoresPage() {
   const router = useRouter()
@@ -132,7 +139,7 @@ export default function JugadoresPage() {
               >
                 {/* Bandera */}
                 <div className="text-2xl w-8 text-center">
-                  <span>{player.nations?.flag_emoji || '🏳️'}</span>
+                  <span>{isoToEmoji(player.nations?.flag_emoji) || '🏳️'}</span>
                 </div>
 
                 {/* Info */}
