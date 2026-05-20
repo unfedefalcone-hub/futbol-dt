@@ -146,8 +146,8 @@ export default function JugadoresPage() {
                   }`}
               >
                 {/* Bandera */}
-                <div className="w-8 h-6 flex items-center justify-center">
-                  <span>{player.nations?.flag_emoji || '🏳️'}</span>
+                <div className="w-8 h-6 flex items-center justify-center overflow-hidden rounded">
+                   <span>{FLAG_EMOJIS[player.nations?.flag_emoji] || '🏳️'}</span>
                 </div>
 
                 {/* Info */}
