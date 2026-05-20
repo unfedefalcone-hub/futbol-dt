@@ -4,6 +4,19 @@ import { createClient } from '@/lib/supabase'
 
 const supabase = createClient()
 
+const FLAG_MAP: Record<string, string> = {
+  AR: '🇦🇷', BR: '🇧🇷', FR: '🇫🇷', ES: '🇪🇸', DE: '🇩🇪',
+  PT: '🇵🇹', NL: '🇳🇱', MX: '🇲🇽', US: '🇺🇸', CA: '🇨🇦',
+  UY: '🇺🇾', CO: '🇨🇴', JP: '🇯🇵', KR: '🇰🇷', MA: '🇲🇦',
+  SN: '🇸🇳', HR: '🇭🇷', BE: '🇧🇪', CH: '🇨🇭', NO: '🇳🇴',
+  SE: '🇸🇪', PL: '🇵🇱', UZ: '🇺🇿', SA: '🇸🇦', EG: '🇪🇬',
+  IR: '🇮🇷', AU: '🇦🇺', NZ: '🇳🇿', GH: '🇬🇭', PA: '🇵🇦',
+  EC: '🇪🇨', PY: '🇵🇾', TR: '🇹🇷', AT: '🇦🇹', DZ: '🇩🇿',
+  JO: '🇯🇴', QA: '🇶🇦', BA: '🇧🇦', CZ: '🇨🇿', ZA: '🇿🇦',
+  CI: '🇨🇮', TN: '🇹🇳', CV: '🇨🇻', CD: '🇨🇩', HT: '🇭🇹',
+  CW: '🇨🇼', 'GB-SCT': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'GB-ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+}
+
 // ── Jugadores ──────────────────────────────────────────────
 export function usePlayers() {
   const [players, setPlayers] = useState<any[]>([])
@@ -11,16 +24,30 @@ export function usePlayers() {
 
   useEffect(() => {
     async function fetchData() {
-      const { data, error } = await supabase
+      const { data: nationsData } = await supabase
+        .from('nations')
+        .select('id, name, flag_emoji, group_name')
+
+      const { data: playersData, error } = await supabase
         .from('players')
-        .select(`
-          id, name, position, value, goals, assists, yellow_cards, red_cards,
-          nations!inner ( id, name, flag_emoji, group_name )
-        `)
+        .select('id, nation_id, name, position, value, goals, assists, yellow_cards, red_cards')
         .order('value', { ascending: false })
 
-      if (error) console.error('Error fetching players:', error)
-      if (data) setPlayers(data)
+      if (error) console.error('Error:', error)
+
+      if (playersData && nationsData) {
+        const nationsMap: Record<string, any> = {}
+        nationsData.forEach(n => { nationsMap[n.id] = n })
+
+        const merged = playersData.map(p => ({
+          ...p,
+          nations: nationsMap[p.nation_id] ? {
+            ...nationsMap[p.nation_id],
+            flag_emoji: FLAG_MAP[nationsMap[p.nation_id].flag_emoji] || '🏳️'
+          } : null
+        }))
+        setPlayers(merged)
+      }
       setLoading(false)
     }
     fetchData()
@@ -66,8 +93,8 @@ export function useProde(userId: string | null) {
         .from('matches')
         .select(`
           id, match_date, status, home_score, away_score, round,
-          home_nation:nations!matches_home_nation_id_fkey ( id, name, flag_url ),
-          away_nation:nations!matches_away_nation_id_fkey ( id, name, flag_url )
+          home_nation:nations!matches_home_nation_id_fkey ( id, name, flag_emoji ),
+          away_nation:nations!matches_away_nation_id_fkey ( id, name, flag_emoji )
         `)
         .order('match_date', { ascending: true })
 
