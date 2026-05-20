@@ -105,8 +105,7 @@ export default function JugadoresPage() {
       showToast(`⚠️ Necesitás ${TOTAL_PLAYERS - selectedPlayers.length} jugadores más`)
       return
     }
-    console.log('Profile:', profile)
-    if (!profile?.id) {
+        if (!profile?.id) {
       showToast('⚠️ Iniciá sesión primero')
       return
     }
