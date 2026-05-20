@@ -42,9 +42,10 @@ export function usePlayers() {
         const merged = playersData.map(p => ({
           ...p,
           nations: nationsMap[p.nation_id] ? {
-            ...nationsMap[p.nation_id],
-            flag_emoji: FLAG_MAP[nationsMap[p.nation_id].flag_emoji] || '🏳️'
-          } : null
+          ...nationsMap[p.nation_id],
+          flag_emoji: FLAG_MAP[nationsMap[p.nation_id].flag_emoji] || '🏳️',
+          flag_code: nationsMap[p.nation_id].flag_emoji?.toLowerCase()
+        } : null
         }))
         setPlayers(merged)
       }
