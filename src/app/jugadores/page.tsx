@@ -15,11 +15,18 @@ const POSITION_LABEL: Record<string, string> = {
 const POSITION_ORDER = ['GK', 'DEF', 'MID', 'FWD']
 const BUDGET = 500
 
-function isoToEmoji(code: string): string {
-  if (!code) return '🏳️'
-  return code.toUpperCase().split('').map(c => 
-    String.fromCodePoint(c.charCodeAt(0) + 127397)
-  ).join('')
+const FLAG_EMOJIS: Record<string, string> = {
+  AR: '🇦🇷', BR: '🇧🇷', FR: '🇫🇷', ES: '🇪🇸', DE: '🇩🇪',
+  EN: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', GB: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', PT: '🇵🇹', IT: '🇮🇹', NL: '🇳🇱',
+  MX: '🇲🇽', US: '🇺🇸', CA: '🇨🇦', UY: '🇺🇾', CO: '🇨🇴',
+  JP: '🇯🇵', KR: '🇰🇷', MA: '🇲🇦', SN: '🇸🇳', NG: '🇳🇬',
+  HR: '🇭🇷', BE: '🇧🇪', CH: '🇨🇭', NO: '🇳🇴', SE: '🇸🇪',
+  PL: '🇵🇱', UZ: '🇺🇿', SA: '🇸🇦', EG: '🇪🇬', IR: '🇮🇷',
+  AU: '🇦🇺', NZ: '🇳🇿', GH: '🇬🇭', PA: '🇵🇦', EC: '🇪🇨',
+  PY: '🇵🇾', TR: '🇹🇷', AT: '🇦🇹', DZ: '🇩🇿', JO: '🇯🇴',
+  QA: '🇶🇦', BA: '🇧🇦', CZ: '🇨🇿', ZA: '🇿🇦', CI: '🇨🇮',
+  TN: '🇹🇳', CV: '🇨🇻', CD: '🇨🇩', HT: '🇭🇹', CW: '🇨🇼',
+  'GB-SCT': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'GB-ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
 }
 
 export default function JugadoresPage() {
@@ -139,7 +146,7 @@ export default function JugadoresPage() {
               >
                 {/* Bandera */}
                 <div className="text-2xl w-8 text-center">
-                  <span>{isoToEmoji(player.nations?.flag_emoji) || '🏳️'}</span>
+                  <span>{FLAG_EMOJIS[player.nations?.flag_emoji] || '🏳️'}</span>
                 </div>
 
                 {/* Info */}
