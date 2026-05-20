@@ -3,9 +3,9 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePlayers } from '@/hooks/useSupabaseData'
 import { useTeamStore } from '@/store/teamStore'
-import { useAuthStore } from '@/store/authStore'
 import { createClient } from '@/lib/supabase'
 import dynamic from 'next/dynamic'
+import { useAuth } from '@/hooks/useAuth'
 
 const BotWrapper = dynamic(() => import('@/components/bot/BotWrapper'), { ssr: false })
 
@@ -31,7 +31,8 @@ export default function JugadoresPage() {
   const supabase = createClient()
   const { players, loading } = usePlayers()
   const { selectedPlayers, addPlayer, removePlayer } = useTeamStore()
-  const { profile } = useAuthStore()
+  const { profile } = useAuth()
+   useAuth() //
 
   const [search, setSearch] = useState('')
   const [posFilter, setPosFilter] = useState('ALL')
@@ -104,6 +105,7 @@ export default function JugadoresPage() {
       showToast(`⚠️ Necesitás ${TOTAL_PLAYERS - selectedPlayers.length} jugadores más`)
       return
     }
+    console.log('Profile:', profile)
     if (!profile?.id) {
       showToast('⚠️ Iniciá sesión primero')
       return
@@ -115,10 +117,10 @@ export default function JugadoresPage() {
       const { data: team, error: teamError } = await supabase
         .from('teams')
         .upsert({
-          profile_id: profile.id,
+          user_id: profile.id,
           formation,
           updated_at: new Date().toISOString(),
-        }, { onConflict: 'profile_id' })
+        }, { onConflict: 'user_id' })
         .select()
         .single()
 
@@ -131,8 +133,8 @@ export default function JugadoresPage() {
       const teamPlayers = selectedPlayers.map((p: any, idx: number) => ({
         team_id: team.id,
         player_id: p.id,
-        is_starter: idx < 11,
-        is_captain: idx === 0,
+        role: idx === 0 ? 'captain' : idx < 11 ? 'starter' : 'bench',
+        position_slot: idx,
       }))
 
       const { error: playersError } = await supabase
