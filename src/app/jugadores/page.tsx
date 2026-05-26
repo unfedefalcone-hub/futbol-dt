@@ -24,6 +24,12 @@ const FORMATION_LIMITS: Record<string, Record<string, number>> = {
   '5-3-2': { GK: 2, DEF: 9, MID: 7, FWD: 5 },
 }
 
+const STARTER_LIMITS: Record<string, Record<string, number>> = {
+  '4-3-3': { GK: 1, DEF: 4, MID: 3, FWD: 3 },
+  '4-4-2': { GK: 1, DEF: 4, MID: 4, FWD: 2 },
+  '5-3-2': { GK: 1, DEF: 5, MID: 3, FWD: 2 },
+}
+
 const FORMATIONS = ['4-3-3', '4-4-2', '5-3-2']
 
 export default function JugadoresPage() {
@@ -32,7 +38,6 @@ export default function JugadoresPage() {
   const { players, loading } = usePlayers()
   const { selectedPlayers, addPlayer, removePlayer } = useTeamStore()
   const { profile } = useAuth()
-   useAuth() //
 
   const [search, setSearch] = useState('')
   const [posFilter, setPosFilter] = useState('ALL')
@@ -48,7 +53,6 @@ export default function JugadoresPage() {
   const spent = selectedPlayers.reduce((s: number, p: any) => s + (p.value || 0), 0)
   const remaining = BUDGET - spent
 
-  // Contadores por posición y nación
   const countByPos = useMemo(() => {
     const c: Record<string, number> = { GK: 0, DEF: 0, MID: 0, FWD: 0 }
     selectedPlayers.forEach((p: any) => { if (c[p.position] !== undefined) c[p.position]++ })
@@ -105,14 +109,13 @@ export default function JugadoresPage() {
       showToast(`⚠️ Necesitás ${TOTAL_PLAYERS - selectedPlayers.length} jugadores más`)
       return
     }
-        if (!profile?.id) {
+    if (!profile?.id) {
       showToast('⚠️ Iniciá sesión primero')
       return
     }
 
     setSaving(true)
     try {
-      // Guardar o actualizar el equipo en Supabase
       const { data: team, error: teamError } = await supabase
         .from('teams')
         .upsert({
@@ -125,16 +128,24 @@ export default function JugadoresPage() {
 
       if (teamError) throw teamError
 
-      // Borrar jugadores anteriores
       await supabase.from('team_players').delete().eq('team_id', team.id)
 
-      // Insertar nuevos jugadores
-      const teamPlayers = selectedPlayers.map((p: any, idx: number) => ({
-        team_id: team.id,
-        player_id: p.id,
-        role: idx === 0 ? 'captain' : idx < 11 ? 'starter' : 'bench',
-        position_slot: idx,
-      }))
+      // Asignar titulares según formación, resto suplentes
+      const starterLimits = STARTER_LIMITS[formation]
+      const posCnt: Record<string, number> = { GK: 0, DEF: 0, MID: 0, FWD: 0 }
+
+      const teamPlayers = selectedPlayers.map((p: any, idx: number) => {
+        const pos = p.position
+        const isStarter = posCnt[pos] < starterLimits[pos]
+        if (isStarter) posCnt[pos]++
+
+        return {
+          team_id: team.id,
+          player_id: p.id,
+          role: isStarter ? 'starter' : 'bench',
+          position_slot: idx,
+        }
+      })
 
       const { error: playersError } = await supabase
         .from('team_players')
